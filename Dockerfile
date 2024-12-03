@@ -21,16 +21,18 @@ RUN apt-get install -y \
     iputils-ping \
     jq \
     moreutils \
-    net-tools \
     netcat \
+    net-tools \
     nmap \
     python3 \
     python3-pip \
     rar \
     strace \
     tcpdump \
+    tcptraceroute \
     telnet \
     tmux \
+    traceroute \
     unrar \
     unzip \
     vim \
@@ -43,8 +45,8 @@ RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime \
     && sh ~/.vim_runtime/install_awesome_vimrc.sh
 
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3 \
-    && echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc \
-    && echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
+    && echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc \
+    && echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
 
 WORKDIR /root
 
