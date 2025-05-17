@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Avoid any interactive prompts while using apt-get
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,7 @@ RUN apt-get install -y \
     iputils-ping \
     jq \
     moreutils \
-    netcat \
+    netcat-traditional \
     net-tools \
     nmap \
     python3 \
@@ -44,9 +44,13 @@ RUN apt-get install -y \
 RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime \
     && sh ~/.vim_runtime/install_awesome_vimrc.sh
 
+# Install ASDF
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3 \
     && echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc \
     && echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
+
+# Install Azure CLI
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 WORKDIR /root
 
