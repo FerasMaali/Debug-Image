@@ -4,41 +4,44 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update and upgrade packages
-RUN apt-get update && apt-get upgrade -y
-
-# Install debugging and necessary tools
-RUN apt-get install -y \
-    build-essential \
-    curl \
-    dnsutils \
-    gdb \
-    git \
-    gzip \
-    htop \
-    iftop \
-    iotop \
-    iproute2 \
-    iputils-ping \
-    jq \
-    moreutils \
-    netcat-traditional \
-    net-tools \
-    nmap \
-    python3 \
-    python3-pip \
-    rar \
-    strace \
-    tcpdump \
-    tcptraceroute \
-    telnet \
-    tmux \
-    traceroute \
-    unrar \
-    unzip \
-    vim \
-    wget \
-    xz-utils \
-    zip
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        apt-transport-https \
+        build-essential \
+        curl \
+        dnsutils \
+        gdb \
+        git \
+        gnupg \
+        gzip \
+        htop \
+        iftop \
+        iotop \
+        iproute2 \
+        iputils-ping \
+        jq \
+        lsb-release \
+        moreutils \
+        netcat-traditional \
+        net-tools \
+        nmap \
+        python3 \
+        python3-pip \
+        rar \
+        strace \
+        tcpdump \
+        tcptraceroute \
+        telnet \
+        tmux \
+        traceroute \
+        unrar \
+        unzip \
+        vim \
+        wget \
+        xz-utils \
+        zip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install amix/vimrc
 RUN git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime \
@@ -51,6 +54,21 @@ RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3 \
 
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# Install mssql tools
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+        | gpg --dearmor \
+        > /usr/share/keyrings/microsoft-prod.gpg \
+    && curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
+        > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+        msodbcsql18 \
+        mssql-tools18 \
+        unixodbc-dev \
+    && ln -s /opt/mssql-tools18/bin/sqlcmd /usr/local/bin/sqlcmd \
+    && ln -s /opt/mssql-tools18/bin/bcp /usr/local/bin/bcp \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root
 
