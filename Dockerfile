@@ -70,6 +70,17 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
     && ln -s /opt/mssql-tools18/bin/bcp /usr/local/bin/bcp \
     && rm -rf /var/lib/apt/lists/*
 
+# Install SqlPackage (DacFx CLI)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libunwind8 \
+    && curl -L https://aka.ms/sqlpackage-linux -o sqlpackage.zip \
+    && mkdir /opt/sqlpackage \
+    && unzip sqlpackage.zip -d /opt/sqlpackage \
+    && chmod a+x /opt/sqlpackage/sqlpackage \
+    && ln -s /opt/sqlpackage/sqlpackage /usr/local/bin/sqlpackage \
+    && rm sqlpackage.zip \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /root
 
 CMD ["/bin/bash"]
