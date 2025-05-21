@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+
+LATEST_TAG=$(git tag --list | grep -E '^v\d\d*$' | sort -n | tail -1)
+
+if [ "$(git rev-parse "$LATEST_TAG")" = "$(git rev-parse HEAD)" ]; then
+	echo "The latest tag '$LATEST_TAG' points at the current commit"
+	exit 1
+fi
+
+NEXT_VERSION="v$(( ${LATEST_TAG#v} + 1 ))"
+
+git tag "$NEXT_VERSION"
+git push origin "$NEXT_VERSION"
