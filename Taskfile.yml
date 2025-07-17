@@ -1,0 +1,145 @@
+version: '3'
+
+vars:
+  APT_OPTIONS: -y --no-install-recommends
+
+tasks:
+  default:
+    desc: "📋 Show all available installation tasks"
+    cmds:
+      - task --list
+
+  # Development Environment
+  python:
+    desc: "🐍 Install Python 3 runtime and package manager (python3, pip)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} python3 python3-pip
+      - rm -rf /var/lib/apt/lists/*
+
+  build-tools:
+    desc: "🔨 Install compilation tools and libraries (gcc, make, build-essential)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} build-essential
+      - rm -rf /var/lib/apt/lists/*
+
+  asdf:
+    desc: "🔧 Install ASDF version manager for managing multiple runtime versions"
+    cmds:
+      - git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.3
+      - echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+      - echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.bashrc
+
+  # Network Debugging
+  network:
+    desc: "🌐 Install network debugging tools (nmap, tcpdump, netcat, traceroute, ping, dig)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} iputils-ping dnsutils netcat-traditional net-tools nmap tcpdump traceroute tcptraceroute telnet iproute2
+      - rm -rf /var/lib/apt/lists/*
+
+  # System Monitoring
+  monitoring:
+    desc: "📊 Install system performance monitoring tools (htop, iotop, iftop)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} htop iotop iftop
+      - rm -rf /var/lib/apt/lists/*
+
+  # File Management
+  archive:
+    desc: "📦 Install archive and compression tools (zip, unzip, rar, gzip, xz)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} zip unzip gzip xz-utils rar unrar
+      - rm -rf /var/lib/apt/lists/*
+
+  # Enhanced Editor
+  enhanced-vim:
+    desc: "✨ Install enhanced Vim configuration with plugins (amix/vimrc)"
+    cmds:
+      - git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
+      - sh ~/.vim_runtime/install_awesome_vimrc.sh
+
+  tmux:
+    desc: "🖥️ Install terminal multiplexer (tmux)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} tmux
+      - rm -rf /var/lib/apt/lists/*
+
+  jq:
+    desc: "📄 Install JSON processor and formatter (jq)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} jq
+      - rm -rf /var/lib/apt/lists/*
+
+  # Cloud & Database Tools
+  azure-cli:
+    desc: "☁️ Install Microsoft Azure command-line interface (az)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} gnupg lsb-release apt-transport-https
+      - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+  mssql:
+    desc: "🗄️ Install Microsoft SQL Server tools (sqlcmd, bcp, sqlpackage)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} gnupg libunwind8 unzip
+      - curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-prod.gpg
+      - curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+      - apt-get update
+      - ACCEPT_EULA=Y apt-get install {{.APT_OPTIONS}} msodbcsql18 mssql-tools18 unixodbc-dev
+      - ln -s /opt/mssql-tools18/bin/sqlcmd /usr/local/bin/sqlcmd
+      - ln -s /opt/mssql-tools18/bin/bcp /usr/local/bin/bcp
+      - curl -L https://aka.ms/sqlpackage-linux -o /tmp/sqlpackage.zip
+      - mkdir -p /opt/sqlpackage
+      - unzip /tmp/sqlpackage.zip -d /opt/sqlpackage
+      - chmod a+x /opt/sqlpackage/sqlpackage
+      - ln -s /opt/sqlpackage/sqlpackage /usr/local/bin/sqlpackage
+      - rm /tmp/sqlpackage.zip
+      - rm -rf /var/lib/apt/lists/*
+
+  mongodb:
+    desc: "🍃 Install MongoDB shell for database operations (mongosh)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} gnupg
+      - wget -qO- https://www.mongodb.org/static/pgp/server-8.0.asc | tee /etc/apt/trusted.gpg.d/server-8.0.asc
+      - echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} mongodb-mongosh
+      - rm -rf /var/lib/apt/lists/*
+
+  # Debugging & Analysis
+  debug-tools:
+    desc: "🐛 Install debugging and tracing tools (gdb, strace)"
+    cmds:
+      - apt-get update
+      - apt-get install {{.APT_OPTIONS}} gdb strace
+      - rm -rf /var/lib/apt/lists/*
+
+  # Preset Combinations
+  dev:
+    desc: "🚀 Install complete development environment (python, build-tools, asdf)"
+    deps: [python, build-tools, asdf]
+
+  full:
+    desc: "💎 Install all available tools (complete debug environment)"
+    deps: 
+      - python
+      - build-tools
+      - asdf
+      - network
+      - monitoring
+      - archive
+      - enhanced-vim
+      - tmux
+      - jq
+      - azure-cli
+      - mssql
+      - mongodb
+      - debug-tools
